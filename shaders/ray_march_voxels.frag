@@ -32,7 +32,7 @@ layout(set = 0, binding = 0) readonly buffer VoxelOctree {
 
 const float pi = 3.14159265358;
 const float e = 2.718281828;
-const int maxIterations = 40;
+const int maxIterations = 100;
 const float maxIterationsF = float(maxIterations);
 const float epsilon = 0.00005;
 const float unitEpsilon = 1.0 + epsilon;
@@ -296,7 +296,7 @@ vec4 castVoxelRay(vec3 p, vec3 d) {
 	do {
 		vec3 s = p;
 		float scale = 1.0;
-		int maxDepth = clamp(int(9.85 - 1.4427*log(travelDist)), 3, 10);
+		int maxDepth = clamp(int(10.0 - 1.75*log(travelDist)), 3, 15);
 		uint index = voxelIndex(s, scale, maxDepth);
 
 		// Is empty or filled?

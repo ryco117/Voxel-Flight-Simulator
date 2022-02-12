@@ -46,7 +46,7 @@ type LightRenderer (window: LightVulkanWindow, device: LightDevice) =
 
     member _.CurrentCommandBuffer =
         assert isFrameStarted
-        commandBuffers.[currentFrameIndex]
+        commandBuffers[currentFrameIndex]
 
     member _.CurrentFrameIndex =
         assert isFrameStarted
@@ -61,7 +61,7 @@ type LightRenderer (window: LightVulkanWindow, device: LightDevice) =
             try
                 currentImageIndex <- swapchain.AcquireNextImageAsIndex ()
                 isFrameStarted <- true
-                let commandBuffer = commandBuffers.[currentFrameIndex]
+                let commandBuffer = commandBuffers[currentFrameIndex]
                 let beginInfo = new CommandBufferBeginInfo ()
                 commandBuffer.Begin beginInfo
                 Some commandBuffer

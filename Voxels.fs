@@ -127,7 +127,7 @@ let randomColour (random: System.Random) =
 
 let randomLeaf random =
     let colour = randomColour random
-    if random.NextDouble () > 0.125 then
+    if random.NextDouble () > 0. then
         {leafVoxel with averageColour = colour}
     else
         {leafVoxel with averageColour = colour; flags = 4u}
@@ -200,13 +200,13 @@ type Intersection =
 | Portal of uint32
 
 let octreeScaleAndCollisionOfPoint (v: System.Numerics.Vector3) (octree: VoxelCompact[]) =
-    let maxDepth = 10   // TODO: Unify maxDepth between shader and cpu programatically
+    let maxDepth = 15   // TODO: Unify maxDepth between shader and cpu programatically
     let rec f (scale: float32) iter (p: System.Numerics.Vector3) = function
     | _ when iter = maxDepth -> scale, Collision
     | index when index = nullVoxelIndex -> scale, EmptySpace
     | index ->
         let i = int index
-        let voxel = octree.[i]
+        let voxel = octree[i]
         if voxel.flags &&& 5u > 0u then
             scale, Collision
         elif voxel.flags &&& 2u > 0u then
@@ -246,9 +246,9 @@ let addRandomGoals (random: System.Random) n minDepth (octree: VoxelCompact[]) =
     let mutable parentSet = Collections.Set<int> []
     let rec replaceVoxel selfIndex parent depth =
         let selfI = int selfIndex
-        let voxel = octree.[selfI]
+        let voxel = octree[selfI]
         let setVoxel () =
-            octree.[int selfIndex] <- VoxelCompact (randomColour random, selfIndex, selfIndex, selfIndex, selfIndex, selfIndex, selfIndex, selfIndex, selfIndex, 2u)
+            octree[int selfIndex] <- VoxelCompact (randomColour random, selfIndex, selfIndex, selfIndex, selfIndex, selfIndex, selfIndex, selfIndex, selfIndex, 2u)
             parentSet <- parentSet.Add parent
             true
         if voxel.flags &&& 6u > 0u then
@@ -259,7 +259,7 @@ let addRandomGoals (random: System.Random) n minDepth (octree: VoxelCompact[]) =
             else
                 setVoxel ()
         else
-            if depth < minDepth || random.NextDouble () > 0.95 then
+            if depth < minDepth || random.NextDouble () > 0.925 then
                 let randChild () =
                     match random.Next 8 with
                     | 0 -> voxel.nodeFTL

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
@@ -12,9 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="RayTracing.fs" />
     <None Include="README.md" />
     <None Include="compile_shaders.bat" />
-    <None Include="shaders\ray_march.frag" />
     <None Include="shaders\ray_march_voxels.frag" />
     <None Include="shaders\quad.vert" />
     <None Include="shaders\object.vert" />
@@ -32,7 +32,6 @@
     <Compile Include="Renderer.fs" />
     <Compile Include="RenderSystem.fs" />
     <Compile Include="LightApp.fs" />
-    <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>

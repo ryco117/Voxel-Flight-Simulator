@@ -166,7 +166,7 @@ type LightSwapchain (device: LightDevice, oldSwapchain: LightSwapchain option) =
 
     // Step 5: Create Frame Buffers
     let swapchainFramebuffers = Array.init imageCount (fun i ->
-        let attachments = [|swapchainImageViews.[i]; depthImageViews.[i]|]
+        let attachments = [|swapchainImageViews[i]; depthImageViews[i]|]
         let info =
             new FramebufferCreateInfo (
                 RenderPass = renderPass,
@@ -204,7 +204,7 @@ type LightSwapchain (device: LightDevice, oldSwapchain: LightSwapchain option) =
 
     member _.Swapchain = swapchain
 
-    member _.GetFramebuffer index = swapchainFramebuffers.[index]
+    member _.GetFramebuffer index = swapchainFramebuffers[index]
 
     member _.Extent = swapchainExtent
 
@@ -213,24 +213,24 @@ type LightSwapchain (device: LightDevice, oldSwapchain: LightSwapchain option) =
     member _.ImageCount = imageCount
 
     member _.AcquireNextImageAsIndex () =
-        waitForFence inFlightFences.[currentFrame]
-        int (device.Device.AcquireNextImageKHR (swapchain, timeout, imageAvailableSemaphores.[currentFrame]))
+        waitForFence inFlightFences[currentFrame]
+        int (device.Device.AcquireNextImageKHR (swapchain, timeout, imageAvailableSemaphores[currentFrame]))
 
     member _.SubmitCommandBuffers buffer imageIndex =
-        if imagesInFlight.[imageIndex] <> Unchecked.defaultof<Fence> then
-            waitForFence imagesInFlight.[imageIndex]
+        if imagesInFlight[imageIndex] <> Unchecked.defaultof<Fence> then
+            waitForFence imagesInFlight[imageIndex]
 
-        imagesInFlight.[imageIndex] <- inFlightFences.[currentFrame]
-        let waitSemaphores = [|imageAvailableSemaphores.[currentFrame]|]
-        let signalSemaphores = [|renderFinishedSemaphores.[currentFrame]|]
+        imagesInFlight[imageIndex] <- inFlightFences[currentFrame]
+        let waitSemaphores = [|imageAvailableSemaphores[currentFrame]|]
+        let signalSemaphores = [|renderFinishedSemaphores[currentFrame]|]
         let submitInfo =
             new SubmitInfo (
                 WaitSemaphores = waitSemaphores,
                 WaitDstStageMask = [|PipelineStageFlags.ColorAttachmentOutput|],
                 CommandBuffers = [|buffer|],
                 SignalSemaphores = signalSemaphores)
-        device.Device.ResetFences [|inFlightFences.[currentFrame]|]
-        device.GraphicsQueue.Submit ([|submitInfo|], inFlightFences.[currentFrame])
+        device.Device.ResetFences [|inFlightFences[currentFrame]|]
+        device.GraphicsQueue.Submit ([|submitInfo|], inFlightFences[currentFrame])
         let presentInfo =
             new PresentInfoKhr (
                 WaitSemaphores = signalSemaphores,
@@ -255,16 +255,16 @@ type LightSwapchain (device: LightDevice, oldSwapchain: LightSwapchain option) =
                 d.DestroySwapchainKHR swapchain
 
                 Array.iteri (fun i img ->
-                    d.DestroyImageView depthImageViews.[i]
+                    d.DestroyImageView depthImageViews[i]
                     d.DestroyImage img
-                    d.FreeMemory depthImageMemories.[i]) depthImages
+                    d.FreeMemory depthImageMemories[i]) depthImages
 
                 Array.iter (fun fb -> d.DestroyFramebuffer fb) swapchainFramebuffers
 
                 d.DestroyRenderPass renderPass
 
                 Array.iteri (fun i fence ->
-                    d.DestroySemaphore renderFinishedSemaphores.[i]
-                    d.DestroySemaphore imageAvailableSemaphores.[i]
+                    d.DestroySemaphore renderFinishedSemaphores[i]
+                    d.DestroySemaphore imageAvailableSemaphores[i]
                     d.DestroyFence fence) inFlightFences
     override self.Finalize () = (self :> System.IDisposable).Dispose ()

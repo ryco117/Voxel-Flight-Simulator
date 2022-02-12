@@ -16,5 +16,5 @@ let MarshalArrayOfStruct (array: 'a[]) (pointer: nativeint) =
     let elementSize = sizeof<'a>
     let mutable offset = 0
     for i = 0 to array.Length - 1 do
-        Marshal.StructureToPtr (array.[i], (pointer + nativeint offset), false)
+        Marshal.StructureToPtr (array[i], (pointer + nativeint offset), false)
         offset <- offset + elementSize

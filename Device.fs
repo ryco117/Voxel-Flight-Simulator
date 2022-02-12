@@ -8,12 +8,15 @@ open LightVulkanWindow
 
 let DEBUG = true
 let validationLayers = if DEBUG then [|"VK_LAYER_KHRONOS_validation"|] else Array.empty
-let deviceExtensions = [|(*Extension.KhrSwapchain*) "VK_KHR_swapchain"|]
+let deviceExtensions = [|"VK_KHR_swapchain"; "VK_KHR_acceleration_structure"; "VK_EXT_descriptor_indexing"; "VK_KHR_maintenance3"; "VK_KHR_buffer_device_address"; "VK_KHR_ray_tracing_pipeline"; "VK_KHR_deferred_host_operations"; "VK_KHR_spirv_1_4"; "VK_KHR_shader_float_controls"|]
+//let deviceExtensions = [|"VK_KHR_swapchain"|]
 let requiredInstanceExtensions =
+    let ext = [|"VK_KHR_surface"; "VK_KHR_win32_surface"; "VK_KHR_get_physical_device_properties2"|]
+    //let ext = [|"VK_KHR_surface"; "VK_KHR_win32_surface"|]
     if DEBUG then
-        [|(*Extension.ExtDebugReport*) "VK_EXT_debug_report"; (*Extension.KhrSurface*) "VK_KHR_surface"; (*Extension.KhrWin32Surface*) "VK_KHR_win32_surface"|]
+        Array.append [|"VK_EXT_debug_report"|] ext
     else
-        [|(*Extension.KhrSurface*) "VK_KHR_surface"; (*Extension.KhrWin32Surface*) "VK_KHR_win32_surface"|]
+        ext
 
 let debugCallback (severity: DebugReportFlagsExt) (msgType: DebugReportObjectTypeExt) (objectHandle: uint64) (location: nativeint) (messageCode: int) (layerPrefix: nativeint) (message: nativeint) (userData: nativeint) =
     let str = $"%s{severity.ToString()}: %s{Marshal.PtrToStringAnsi message}"
@@ -33,13 +36,13 @@ type LightDevice (window: LightVulkanWindow) =
         if DEBUG && not (checkValidationLayerSupport ()) then
             raise (System.Exception "Validation layers requested, but not available!")
         use appInfo =
-            let versionOne = Version.Make (1u, 0u, 0u)
+            let version = Version.Make (1u, 1u, 0u)
             new ApplicationInfo (
-                ApplicationName = "Volcano",
-                ApplicationVersion = versionOne,
+                ApplicationName = "Voxel-Flight-Simulator",
+                ApplicationVersion = version,
                 EngineName = "No Engine",
-                EngineVersion = versionOne,
-                ApiVersion = versionOne
+                EngineVersion = version,
+                ApiVersion = version
             )
         let createInfo =
             new InstanceCreateInfo (
@@ -63,7 +66,7 @@ type LightDevice (window: LightVulkanWindow) =
         let uintOpt = function
         | Some i -> Some (uint32 i)
         | None -> None
-        uintOpt (if Option.isSome presentFamily && graphicsCheck queueFamilies.[Option.get presentFamily] then presentFamily else graphicsFamily), uintOpt presentFamily
+        uintOpt (if Option.isSome presentFamily && graphicsCheck queueFamilies[Option.get presentFamily] then presentFamily else graphicsFamily), uintOpt presentFamily
 
     let querySwapchainSupport (device: PhysicalDevice) =
         (device.GetSurfaceFormatsKHR surface), (device.GetSurfacePresentModesKHR surface), (device.GetSurfaceCapabilitiesKHR surface)
@@ -132,7 +135,7 @@ type LightDevice (window: LightVulkanWindow) =
             let buffers =
                 new CommandBufferAllocateInfo (Level = CommandBufferLevel.Primary, CommandPool = commandPool, CommandBufferCount = 1u)
                 |> logicalDevice.AllocateCommandBuffers
-            buffers.[0]
+            buffers[0]
         new CommandBufferBeginInfo (Flags = CommandBufferUsageFlags.OneTimeSubmit)
         |> commandBuffer.Begin
         commandBuffer

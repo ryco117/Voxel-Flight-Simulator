@@ -22,8 +22,8 @@ type LightModel (device: LightDevice, vertices: (float32*float32)[]) =
         let transferToPtr (memPtr: nativeint) =
             let data = Array.init count (fun i ->
                 match i % 2 with
-                | 0 -> fst vertices.[i/2]
-                | 1 -> snd vertices.[i/2]
+                | 0 -> fst vertices[i/2]
+                | 1 -> snd vertices[i/2]
                 | e -> raise (System.ArithmeticException $"Modulo operator failed with impossibility %i{e}"))
             Marshal.Copy (data, 0, memPtr, data.Length)
         device.CreateLocalBufferWithTransfer buffSize BufferUsageFlags.VertexBuffer transferToPtr

@@ -10,7 +10,7 @@ open LightModel
 open LightObject
 open LightState
 
-let defaultSpeed = 0.25f
+let defaultSpeed = 0.245f
 let initialPosition = System.Numerics.Vector3 (0.f, 0.125f, -2.f)
 
 let newDefaultState () = {
@@ -84,7 +84,7 @@ type LightApp () =
                         state.upTime.Elapsed.TotalSeconds - state.lastFrameTime
                         |> float32
                     let newSpeed =
-                        let tempNew = defaultSpeed * System.MathF.Pow (currentScale, 0.425f)
+                        let tempNew = defaultSpeed * System.MathF.Pow (currentScale, 0.65f)
                         let frac = exp ((if tempNew > state.lastSpeed then -0.375f else -2.75f) * deltaTime)
                         frac * state.lastSpeed + (1.f - frac) * tempNew
                     let forward =
@@ -259,3 +259,9 @@ type LightApp () =
             if not disposed then
                 disposed <- true
     override self.Finalize () = (self :> System.IDisposable).Dispose ()
+
+[<EntryPoint>]
+let main _ =
+    use app = new LightApp ()
+    app.Run ()
+    0
